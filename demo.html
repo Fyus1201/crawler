@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+<script>
+    var json = {"w":"w","22":"ddd"}
+    var aa = [11,22,33]
+    var bb = [33333,222]
+    var cc = []
+    cc = cc.concat(bb)
+    console.log(cc);
+
+    function getEvents() {
+
+            console.log("读取json未完成");
+            setTimeout("getEvents()", 500)
+
+    }
+    getEvents();//判断是否完成
+
+</script>
+</html>
