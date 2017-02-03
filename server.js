@@ -96,10 +96,12 @@ function start(){
                         }else {
 
                             var $ = cheerio.load(pres.text);
-                            console.log("内页图片"+$("#mainpic").find("img").attr('src') );
+                            // console.log("内页图片"+$("#mainpic").find("img").attr('src') );
+                            var url_img = $("#mainpic").find("img").attr('src');
+                            console.log("添加图片" + url_img);
+                            movie_urlImg.push(url_img);
 
                         }
-
                     });
 
                 setTimeout(function (url) {
@@ -115,6 +117,55 @@ function start(){
                 function (err,result) {
                     console.log("******完成网页抓取*******");
                     console.log("\n准备抓取内页图片\n");
+
+                    function getEvents() {
+
+                        if(get_array.length*20 === movie_urlImg.length){
+                            console.log("读取json完成" + movie_urlImg.length);
+                            movie_urlImg.forEach(
+                                function (subject) {
+
+                                    ep.emit('img_urlHtmlEvent',{'img':subject,'title':"aaaa内页aaaa"});
+                                }
+                            )
+                        }else {
+                            console.log("读取json未完成" + movie_urlImg.length);
+                            setTimeout(getEvents, 500);//node环境下使用eval方法 只能在非严格模式中进行使用，在use strict中是不允许使用这个方法的。
+                        }
+                    }
+                    getEvents();//判断是否完成
+
+                })
+
+        });
+
+        ep.after('img_urlHtmlEvent',get_array.length*20,function (urlANDtitles) {
+            //控制并发数
+            console.log("out:"+urlANDtitles[0].title);
+
+            var curCount = 0;
+
+            var getImg = function (urlANDtitle, callback) {
+                var delay = parseInt((Math.random() * 30000000) % 1000, 10);
+                curCount++;
+
+                let img = urlANDtitle.img;
+                let title = urlANDtitle.title;
+
+                donwnImg(img,title);
+
+                setTimeout(function (url) {
+                    curCount--;
+                    callback(null,url +'Call back content');
+                },delay);
+            };
+
+            async.mapLimit(urlANDtitles,2,
+                function (urlANDtitle, callback) {
+                    getImg(urlANDtitle, callback);
+                },
+                function (err,result) {
+                    console.log("******完成图片抓取*******");
                 })
 
         });
@@ -150,25 +201,7 @@ function start(){
 
         });
 
-        function getEvents() {
-            /*
-            if(get_array.length*20 === movie_array.length){
-                console.log("读取json完成" + movie_array.length);
-                movie_array.forEach(
-                    function (subject) {
 
-                        ep.emit('imgHtmlEvent',{'img':subject.cover,'title':subject.title});
-                        ep.emit('movieHtmlEvent',subject.url);
-                    }
-                )
-            }else {
-                console.log("读取json未完成" + movie_array.length);
-                setTimeout("getEvents()", 500)
-            }*/
-
-            console.log("读取json未完成" + movie_array.length);
-            setTimeout("getEvents()", 500)
-        }
 
         //控制并发数
         var curCount = 0;
@@ -208,7 +241,31 @@ function start(){
 
             },function (err,result) {
 
+                function getEvents() {
+
+                    if(get_array.length*20 === movie_array.length){
+                        console.log("读取json完成" + movie_array.length);
+                        movie_array.forEach(
+                            function (subject) {
+
+                                ep.emit('imgHtmlEvent',{'img':subject.cover,'title':subject.title});
+                                ep.emit('movieHtmlEvent',subject.url);
+                            }
+                        )
+                    }else {
+                        console.log("读取json未完成" + movie_array.length);
+                        setTimeout(getEvents, 500)//node环境下使用eval方法 只能在非严格模式中进行使用，在use strict中是不允许使用这个方法的。
+                    }
+                }
                 getEvents();//判断是否完成
+
+
+                // var int=setInterval(function(){console.log(2);},100);
+                //
+                // setTimeout(function () {
+                //     console.log("dfds");
+                //     int=clearInterval(int)
+                // }, 2000);
 
             });
     };
