@@ -36,7 +36,10 @@ var donwnImg = function (imgHttp,title) {
     //var titleLength = itemDetail.children('ul').length;
     //console.log("分类:   "+titleLength);
     //下载
-    superagent.get(imgHttp).end(function(err,sres){
+    superagent.get(imgHttp)
+        .set({ 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36',
+            'Content-Type':'text/html;charset=UTF-8' })
+        .end(function(err,sres){
 
         if(err){
             console.log(err);
@@ -90,6 +93,8 @@ function start(){
                 curCount++;
 
                 superagent.get(url)
+                    .set({ 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36',
+                        'Content-Type':'text/html;charset=UTF-8' })
                     .end(function (err,pres) {
                         if (err) {
                             console.log("信息读取失败"+err);
@@ -210,7 +215,10 @@ function start(){
             var delay = parseInt((Math.random() * 30000000) % 1000, 10);
             curCount++;
             console.log("读取json信息" + get_url + "当前并发数：" + curCount);
-            superagent.get(get_url)
+            superagent
+                .get(get_url)
+                .set({ 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36',
+                    'Content-Type':'text/html;charset=UTF-8' })
                 .end(function (err,pres) {
                     if (err) {
                         console.log("ajax地址读取失败"+err);
